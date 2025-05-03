@@ -1,4 +1,5 @@
 #include "events.hpp"
+#include "guards.hpp"
 
 bool events::Time::operator<(const Time& other) const
 {
@@ -12,6 +13,7 @@ bool events::Time::operator>(const Time& other) const
 
 std::ostream& events::operator<<(std::ostream& out, const Time& time)
 {
+  guards::ScopeGuard guard(out);
   out << std::setfill('0') << std::setw(2) << time.hours << ':' << std::setw(2) << time.minutes;
   return out;
 }
