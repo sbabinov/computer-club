@@ -1,4 +1,4 @@
-#include "delimiter.hpp"
+#include "delimiters.hpp"
 #include <ios>
 
 std::istream& delimiters::operator>>(std::istream& in, delimiters::CharDelimiter&& del)
