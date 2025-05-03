@@ -1,6 +1,6 @@
 #ifndef EVENTS_HPP
 #define EVENTS_HPP
-#include <ostream>
+#include <iostream>
 #include <iomanip>
 #include <string>
 #include <set>
@@ -37,8 +37,12 @@ namespace events
   {
   public:
     Event(Time time);
-    virtual void process(ComputerClub& club) = 0;
+    virtual ~Event() = default;
+    Time getTime() const;
+    virtual void process(ComputerClub& club) const = 0;
+    friend std::ostream& operator<<(std::ostream& out, const Event& event);
   protected:
+    unsigned short id_;
     Time time_;
   };
 
@@ -46,6 +50,7 @@ namespace events
   {
   public:
     ClientEvent(Time time, const std::string& clientName);
+    friend std::ostream& operator<<(std::ostream& out, const ClientEvent& event);
   protected:
     std::string clientName_;
   };
@@ -54,7 +59,7 @@ namespace events
   {
   public:
     ClientCameEvent(Time time, const std::string& clientName);
-    virtual void process(ComputerClub& club) override {};
+    virtual void process(ComputerClub& club) const override {};
   private:
     std::string clientName_;
   };
@@ -68,7 +73,7 @@ namespace events
       OUTCOMING
     };
     ClientSatEvent(Time time, const std::string& clientName, Type type);
-    virtual void process(ComputerClub& club) override {};
+    virtual void process(ComputerClub& club) const override {};
   private:
     std::string clientName_;
     Type type_;
@@ -78,7 +83,7 @@ namespace events
   {
   public:
     ClientWaitingEvent(Time time, const std::string& clientName);
-    virtual void process(ComputerClub& club) override {};
+    virtual void process(ComputerClub& club) const override {};
   private:
     std::string clientName_;
   };
@@ -92,7 +97,7 @@ namespace events
       OUTCOMING
     };
     ClientLeftEvent(Time time, const std::string& clientName, Type type);
-    virtual void process(ComputerClub& club) override {};
+    virtual void process(ComputerClub& club) const override {};
   private:
     std::string clientName_;
     Type type_;
@@ -102,7 +107,8 @@ namespace events
   {
   public:
     ErrorEvent(Time time, ErrorType error);
-    virtual void process(ComputerClub& club) override {};
+    virtual void process(ComputerClub& club) const override {};
+    friend std::ostream& operator<<(std::ostream& out, const ErrorEvent& event);
   private:
     ErrorType error_;
   };
@@ -120,6 +126,8 @@ namespace events
     void assignTable(const std::string& name, size_t table);
     size_t removeClient(const std::string& name);
     std::string getClientFromQueue();
+
+    void processEvent(const Event& event);
   private:
     std::set< std::string > clients_;
     std::queue< std::string > waitingClients_;
