@@ -6,6 +6,7 @@
 #include <set>
 #include <queue>
 #include <map>
+#include <utility>
 
 namespace events
 {
@@ -16,6 +17,8 @@ namespace events
 
     bool operator<(const Time& other) const;
     bool operator>(const Time& other) const;
+    bool operator>=(const Time& other) const;
+    bool operator<=(const Time& other) const;
   };
   std::ostream& operator<<(std::ostream& out, const Time& time);
 
@@ -107,7 +110,7 @@ namespace events
   class ComputerClub
   {
   public:
-    ComputerClub(size_t nTables, size_t price);
+    ComputerClub(size_t nTables, std::pair< Time, Time > workingTime, size_t price);
     bool isOpen() const;
     bool hasClient(const std::string& name) const;
     bool hasAvailableTable() const;
@@ -123,6 +126,8 @@ namespace events
     std::map< size_t, std::string > tables_;
     size_t nTables_;
     size_t price_;
+    std::pair< Time, Time > workingTime_;
+    Time currentTime_;
   };
 }
 
