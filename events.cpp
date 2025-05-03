@@ -1,5 +1,6 @@
 #include "events.hpp"
 #include "guards.hpp"
+#include "delimiters.hpp"
 
 std::string convertErrorToString(events::ErrorType error)
 {
@@ -39,6 +40,23 @@ bool events::Time::operator<=(const Time& other) const
   return !(*this > other);
 }
 
+std::istream& events::operator>>(std::istream& in, Time& time)
+{
+  std::istream::sentry sentry(in);
+  if (!sentry)
+  {
+    return in;
+  }
+  using del = delimiters::CharDelimiter;
+  Time temp = {0, 0};
+  in >> temp.hours >> del{':'} >> temp.minutes;
+  if (in)
+  {
+    time = std::move(temp);
+  }
+  return in;
+}
+
 std::ostream& events::operator<<(std::ostream& out, const Time& time)
 {
   guards::ScopeGuard guard(out);
@@ -60,6 +78,11 @@ std::ostream& events::operator<<(std::ostream& out, const Event& event)
 {
   out << event.time_ << ' ' << event.id_;
   return out;
+}
+
+std::istream& events::operator>>(std::istream& in, Event& event)
+{
+
 }
 
 std::ostream& events::operator<<(std::ostream& out, const ClientEvent& event)
