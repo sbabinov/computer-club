@@ -27,6 +27,7 @@ namespace events
   class Event
   {
   public:
+    Event() = default;
     Event(Time time);
     virtual ~Event() = default;
     Time getTime() const;
@@ -41,6 +42,7 @@ namespace events
   class ClientEvent: public Event
   {
   public:
+    ClientEvent() = default;
     ClientEvent(Time time, const std::string& clientName);
     virtual void print(std::ostream& out) const override;
   protected:

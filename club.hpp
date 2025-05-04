@@ -23,6 +23,8 @@ namespace club
   {
   public:
     ComputerClub(size_t nTables, std::pair< Time, Time > workingTime, size_t price, std::ostream* logStream);
+    ~ComputerClub();
+
     bool isOpen() const;
     bool hasClient(const std::string& name) const;
     bool hasAvailableTable() const;

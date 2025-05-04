@@ -10,7 +10,19 @@ club::ComputerClub::ComputerClub(size_t nTables, std::pair< club::Time, club::Ti
   clients_(),
   waitingClients_(),
   logStream_(logStream)
-{}
+{
+  (*logStream_) << workingTime_.first << '\n';
+}
+
+club::ComputerClub::~ComputerClub()
+{
+  currentTime_ = workingTime_.second;
+  for (auto it = clients_.begin(); it != clients_.end(); ++it)
+  {
+    events::ClientLeftEvent(currentTime_, *it, events::ClientLeftEvent::Type::OUTCOMING).process(*this);
+  }
+  (*logStream_) << workingTime_.second << '\n';
+}
 
 bool club::ComputerClub::isOpen() const
 {
@@ -62,6 +74,10 @@ size_t club::ComputerClub::removeClient(const std::string& name)
   {
     table = (*it).first;
     tables_.erase(it);
+  }
+  if (isOpen())
+  {
+    clients_.erase(name);
   }
   return table;
 }

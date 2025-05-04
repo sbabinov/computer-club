@@ -221,7 +221,7 @@ void events::ClientLeftEvent::process(club::ComputerClub& club) const
     else
     {
       size_t availableTable = club.removeClient(clientName_);
-      if (!club.isQueueEmpty())
+      if (club.isOpen() && (!club.isQueueEmpty()))
       {
         ClientSatEvent(time_, club.getClientFromQueue(), availableTable, ClientSatEvent::Type::OUTCOMING).process(club);
       }
