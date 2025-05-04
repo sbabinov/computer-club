@@ -1,13 +1,15 @@
 #include "club.hpp"
 
-club::ComputerClub::ComputerClub(size_t nTables, std::pair< club::Time, club::Time > workingTime, size_t price):
+club::ComputerClub::ComputerClub(size_t nTables, std::pair< club::Time, club::Time > workingTime,
+ size_t price, std::ostream* logStream):
   nTables_(nTables),
   price_(price),
   workingTime_(workingTime),
   currentTime_(),
   tables_(),
   clients_(),
-  waitingClients_()
+  waitingClients_(),
+  logStream_(logStream)
 {}
 
 bool club::ComputerClub::isOpen() const
@@ -64,6 +66,11 @@ std::string club::ComputerClub::getClientFromQueue()
   std::string clientName = std::move(waitingClients_.front());
   waitingClients_.pop();
   return clientName;
+}
+
+void club::ComputerClub::logEvent(const events::Event& event)
+{
+  (*logStream_) << event;
 }
 
 void club::ComputerClub::processEvent(const events::Event& event)

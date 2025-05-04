@@ -3,6 +3,7 @@
 #include <set>
 #include <queue>
 #include <map>
+#include <ostream>
 #include <string>
 #include <utility>
 #include "structs.hpp"
@@ -20,7 +21,7 @@ namespace club
   class ComputerClub
   {
   public:
-    ComputerClub(size_t nTables, std::pair< Time, Time > workingTime, size_t price);
+    ComputerClub(size_t nTables, std::pair< Time, Time > workingTime, size_t price, std::ostream* logStream);
     bool isOpen() const;
     bool hasClient(const std::string& name) const;
     bool hasAvailableTable() const;
@@ -31,6 +32,7 @@ namespace club
     size_t removeClient(const std::string& name);
     std::string getClientFromQueue();
 
+    void logEvent(const events::Event& event);
     void processEvent(const events::Event& event);
   private:
     std::set< std::string > clients_;
@@ -40,6 +42,7 @@ namespace club
     size_t price_;
     std::pair< Time, Time > workingTime_;
     Time currentTime_;
+    std::ostream* logStream_;
   };
 }
 

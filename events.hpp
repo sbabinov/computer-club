@@ -31,17 +31,18 @@ namespace events
     virtual ~Event() = default;
     Time getTime() const;
     virtual void process(club::ComputerClub& club) const;
-    friend std::ostream& operator<<(std::ostream& out, const Event& event);
+    virtual void print(std::ostream& out) const;
   protected:
     unsigned short id_;
     Time time_;
   };
+  std::ostream& operator<<(std::ostream& out, const Event& event);
 
   class ClientEvent: public Event
   {
   public:
     ClientEvent(Time time, const std::string& clientName);
-    friend std::ostream& operator<<(std::ostream& out, const ClientEvent& event);
+    virtual void print(std::ostream& out) const override;
   protected:
     std::string clientName_;
   };
@@ -51,7 +52,7 @@ namespace events
   {
   public:
     ClientCameEvent(Time time, const std::string& clientName);
-    virtual void process(club::ComputerClub& club) const override {};
+    virtual void process(club::ComputerClub& club) const override;
   private:
     std::string clientName_;
   };
@@ -65,8 +66,8 @@ namespace events
       OUTCOMING
     };
     ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type);
+    virtual void print(std::ostream& out) const override;
     virtual void process(club::ComputerClub& club) const override {};
-    friend std::ostream& operator<<(std::ostream& out, const ClientSatEvent& event);
   private:
     std::string clientName_;
     size_t table_;
@@ -101,8 +102,8 @@ namespace events
   {
   public:
     ErrorEvent(Time time, ErrorType error);
+    virtual void print(std::ostream& out) const override;
     virtual void process(club::ComputerClub& club) const override {};
-    friend std::ostream& operator<<(std::ostream& out, const ErrorEvent& event);
   private:
     ErrorType error_;
   };

@@ -39,12 +39,19 @@ events::Time events::Event::getTime() const
   return time_;
 }
 
+void events::Event::print(std::ostream& out) const
+{
+  out << time_ << ' ' << id_;
+}
+
 void events::Event::process(club::ComputerClub& club) const
-{}
+{
+  club.logEvent(*this);
+}
 
 std::ostream& events::operator<<(std::ostream& out, const Event& event)
 {
-  out << event.time_ << ' ' << event.id_;
+  event.print(out);
   return out;
 }
 
@@ -98,21 +105,27 @@ std::istream& events::operator>>(std::istream& in, std::unique_ptr< ClientEvent 
   return in;
 }
 
-std::ostream& events::operator<<(std::ostream& out, const ClientEvent& event)
-{
-  out << static_cast< const events::Event& >(event) << ' ' << event.clientName_;
-  return out;
-}
-
 events::ClientEvent::ClientEvent(Time time, const std::string& clientName):
   events::Event(time),
   clientName_(clientName)
 {}
 
+void events::ClientEvent::print(std::ostream& out) const
+{
+  events::Event::print(out);
+  out << ' ' << clientName_;
+}
+
 events::ClientCameEvent::ClientCameEvent(Time time, const std::string& clientName):
   events::ClientEvent(time, clientName)
 {
   id_ = 1;
+}
+
+void events::ClientCameEvent::process(club::ComputerClub& club) const
+{
+  events::Event::process(club);
+
 }
 
 events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type):
@@ -130,10 +143,10 @@ events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName,
   }
 }
 
-std::ostream& events::operator<<(std::ostream& out, const ClientSatEvent& event)
+void events::ClientSatEvent::print(std::ostream& out) const
 {
-  out << static_cast< const events::ClientEvent& >(event) << ' ' << event.table_;
-  return out;
+  events::ClientEvent::print(out);
+  out << ' ' << table_;
 }
 
 events::ClientWaitingEvent::ClientWaitingEvent(Time time, const std::string& clientName):
@@ -163,8 +176,8 @@ events::ErrorEvent::ErrorEvent(Time time, ErrorType error):
   id_ = 13;
 }
 
-std::ostream& events::operator<<(std::ostream& out, const ErrorEvent& event)
+void events::ErrorEvent::print(std::ostream& out) const
 {
-  out << static_cast< const events::Event& >(event) << ' ' << convertErrorToString(event.error_);
-  return out;
+  events::Event::print(out);
+  out << ' ' << convertErrorToString(error_);
 }
