@@ -96,7 +96,7 @@ std::ostream& events::operator<<(std::ostream& out, const Event& event)
   return out;
 }
 
-std::istream& events::operator>>(std::istream& in, ClientEvent& event)
+std::istream& events::operator>>(std::istream& in, std::unique_ptr< ClientEvent >& event)
 {
   std::istream::sentry sentry(in);
   if (!sentry)
@@ -120,7 +120,7 @@ std::istream& events::operator>>(std::istream& in, ClientEvent& event)
 
   if (id == 1)
   {
-    event = events::ClientCameEvent(time, name);
+    event = std::make_unique< events::ClientCameEvent >(time, name);
   }
   else if (id == 2)
   {
@@ -128,16 +128,16 @@ std::istream& events::operator>>(std::istream& in, ClientEvent& event)
     in >> table;
     if (in)
     {
-      event = events::ClientSatEvent(time, name, table, events::ClientSatEvent::Type::INCOMING);
+      event = std::make_unique< events::ClientSatEvent >(time, name, table, events::ClientSatEvent::Type::INCOMING);
     }
   }
   else if (id == 3)
   {
-    event = events::ClientWaitingEvent(time, name);
+    event = std::make_unique< events::ClientWaitingEvent >(time, name);
   }
   else if (id == 4)
   {
-    event = events::ClientLeftEvent(time, name, events::ClientLeftEvent::Type::INCOMING);
+    event = std::make_unique< events::ClientLeftEvent >(time, name, events::ClientLeftEvent::Type::INCOMING);
   }
   else
   {
@@ -176,6 +176,12 @@ events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName,
   {
     id_ = 12;
   }
+}
+
+std::ostream& events::operator<<(std::ostream& out, const ClientSatEvent& event)
+{
+  out << static_cast< const events::ClientEvent& >(event) << ' ' << event.table_;
+  return out;
 }
 
 events::ClientWaitingEvent::ClientWaitingEvent(Time time, const std::string& clientName):

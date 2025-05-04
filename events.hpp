@@ -6,6 +6,7 @@
 #include <set>
 #include <queue>
 #include <map>
+#include <memory>
 #include <utility>
 
 namespace events
@@ -55,7 +56,7 @@ namespace events
   protected:
     std::string clientName_;
   };
-  std::istream& operator>>(std::istream& in, ClientEvent& event);
+  std::istream& operator>>(std::istream& in, std::unique_ptr< ClientEvent >& event);
 
   class ClientCameEvent: public ClientEvent
   {
@@ -66,7 +67,7 @@ namespace events
     std::string clientName_;
   };
 
-  struct ClientSatEvent: public ClientEvent
+  class ClientSatEvent: public ClientEvent
   {
   public:
     enum class Type
@@ -76,6 +77,7 @@ namespace events
     };
     ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type);
     virtual void process(ComputerClub& club) const override {};
+    friend std::ostream& operator<<(std::ostream& out, const ClientSatEvent& event);
   private:
     std::string clientName_;
     size_t table_;
@@ -91,7 +93,7 @@ namespace events
     std::string clientName_;
   };
 
-  struct ClientLeftEvent: public ClientEvent
+  class ClientLeftEvent: public ClientEvent
   {
   public:
     enum class Type
