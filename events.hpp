@@ -40,13 +40,12 @@ namespace events
     Event(Time time);
     virtual ~Event() = default;
     Time getTime() const;
-    virtual void process(ComputerClub& club) const = 0;
+    virtual void process(ComputerClub& club) const {};
     friend std::ostream& operator<<(std::ostream& out, const Event& event);
   protected:
     unsigned short id_;
     Time time_;
   };
-  std::istream& operator>>(std::istream& in, Event& event);
 
   class ClientEvent: public Event
   {
@@ -56,6 +55,7 @@ namespace events
   protected:
     std::string clientName_;
   };
+  std::istream& operator>>(std::istream& in, ClientEvent& event);
 
   class ClientCameEvent: public ClientEvent
   {
@@ -74,10 +74,11 @@ namespace events
       INCOMING,
       OUTCOMING
     };
-    ClientSatEvent(Time time, const std::string& clientName, Type type);
+    ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type);
     virtual void process(ComputerClub& club) const override {};
   private:
     std::string clientName_;
+    size_t table_;
     Type type_;
   };
 

@@ -1,4 +1,7 @@
 #include "events.hpp"
+#include <algorithm>
+#include <cctype>
+#include <regex>
 #include "guards.hpp"
 #include "delimiters.hpp"
 
@@ -18,6 +21,15 @@ std::string convertErrorToString(events::ErrorType error)
     return "ICanWaitNoLonger!";
   }
   return "";
+}
+
+bool isNameCorrect(const std::string& name)
+{
+  auto pred = [&](const char ch) -> bool
+  {
+    return !(std::isalnum(ch) || (ch == '_') || (ch == '-'));
+  };
+  return (std::find_if(name.cbegin(), name.cend(), pred) == name.cend());
 }
 
 bool events::Time::operator<(const Time& other) const
@@ -47,13 +59,17 @@ std::istream& events::operator>>(std::istream& in, Time& time)
   {
     return in;
   }
-  using del = delimiters::CharDelimiter;
-  Time temp = {0, 0};
-  in >> temp.hours >> del{':'} >> temp.minutes;
-  if (in)
+  std::string strTime = "";
+  in >> strTime;
+  std::regex regex("^([01][0-9]|2[0-3]):([0-5][0-9])$");
+  std::smatch match;
+  if (!std::regex_match(strTime, match, regex))
   {
-    time = std::move(temp);
+    in.setstate(std::ios::failbit);
+    return in;
   }
+  time.hours = std::stoi(match[1].str());
+  time.minutes = std::stoi(match[2].str());
   return in;
 }
 
@@ -80,9 +96,54 @@ std::ostream& events::operator<<(std::ostream& out, const Event& event)
   return out;
 }
 
-std::istream& events::operator>>(std::istream& in, Event& event)
+std::istream& events::operator>>(std::istream& in, ClientEvent& event)
 {
+  std::istream::sentry sentry(in);
+  if (!sentry)
+  {
+    return in;
+  }
+  unsigned short id = 0;
+  Time time = {0, 0};
+  std::string name = "";
+  in >> time >> id >> name;
+  if (!in)
+  {
+    return in;
+  }
 
+  if (!isNameCorrect(name))
+  {
+    in.setstate(std::ios::failbit);
+    return in;
+  }
+
+  if (id == 1)
+  {
+    event = events::ClientCameEvent(time, name);
+  }
+  else if (id == 2)
+  {
+    size_t table;
+    in >> table;
+    if (in)
+    {
+      event = events::ClientSatEvent(time, name, table, events::ClientSatEvent::Type::INCOMING);
+    }
+  }
+  else if (id == 3)
+  {
+    event = events::ClientWaitingEvent(time, name);
+  }
+  else if (id == 4)
+  {
+    event = events::ClientLeftEvent(time, name, events::ClientLeftEvent::Type::INCOMING);
+  }
+  else
+  {
+    in.setstate(std::ios::failbit);
+  }
+  return in;
 }
 
 std::ostream& events::operator<<(std::ostream& out, const ClientEvent& event)
@@ -102,8 +163,9 @@ events::ClientCameEvent::ClientCameEvent(Time time, const std::string& clientNam
   id_ = 1;
 }
 
-events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName, Type type):
+events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type):
   events::ClientEvent(time, clientName),
+  table_(table),
   type_(type)
 {
   if (type_ == Type::INCOMING)
