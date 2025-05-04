@@ -12,6 +12,7 @@
 namespace events
 {
   class Event;
+  class ClientEvent;
 }
 
 namespace club
@@ -27,13 +28,14 @@ namespace club
     bool hasAvailableTable() const;
     bool isTableOccupied(size_t table) const;
     bool isQueueEmpty() const;
+    Time currentTime() const;
     void addClient(const std::string& name);
     void assignTable(const std::string& name, size_t table);
     size_t removeClient(const std::string& name);
     std::string getClientFromQueue();
 
     void logEvent(const events::Event& event);
-    void processEvent(const events::Event& event);
+    void processEvent(const events::ClientEvent& event);
   private:
     std::set< std::string > clients_;
     std::queue< std::string > waitingClients_;

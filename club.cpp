@@ -24,7 +24,7 @@ bool club::ComputerClub::hasClient(const std::string& name) const
 
 bool club::ComputerClub::hasAvailableTable() const
 {
-  return nTables_ < clients_.size();
+  return tables_.size() < nTables_;
 }
 
 bool club::ComputerClub::isTableOccupied(size_t table) const
@@ -35,6 +35,11 @@ bool club::ComputerClub::isTableOccupied(size_t table) const
 bool club::ComputerClub::isQueueEmpty() const
 {
   return waitingClients_.empty();
+}
+
+structs::Time club::ComputerClub::currentTime() const
+{
+  return currentTime_;
 }
 
 void club::ComputerClub::addClient(const std::string& name)
@@ -70,10 +75,10 @@ std::string club::ComputerClub::getClientFromQueue()
 
 void club::ComputerClub::logEvent(const events::Event& event)
 {
-  (*logStream_) << event;
+  (*logStream_) << event << '\n';
 }
 
-void club::ComputerClub::processEvent(const events::Event& event)
+void club::ComputerClub::processEvent(const events::ClientEvent& event)
 {
   currentTime_ = event.getTime();
   event.process(*this);

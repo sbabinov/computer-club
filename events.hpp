@@ -53,8 +53,6 @@ namespace events
   public:
     ClientCameEvent(Time time, const std::string& clientName);
     virtual void process(club::ComputerClub& club) const override;
-  private:
-    std::string clientName_;
   };
 
   class ClientSatEvent: public ClientEvent
@@ -67,9 +65,8 @@ namespace events
     };
     ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type);
     virtual void print(std::ostream& out) const override;
-    virtual void process(club::ComputerClub& club) const override {};
+    virtual void process(club::ComputerClub& club) const override;
   private:
-    std::string clientName_;
     size_t table_;
     Type type_;
   };
@@ -78,9 +75,7 @@ namespace events
   {
   public:
     ClientWaitingEvent(Time time, const std::string& clientName);
-    virtual void process(club::ComputerClub& club) const override {};
-  private:
-    std::string clientName_;
+    virtual void process(club::ComputerClub& club) const override;
   };
 
   class ClientLeftEvent: public ClientEvent
@@ -92,9 +87,8 @@ namespace events
       OUTCOMING
     };
     ClientLeftEvent(Time time, const std::string& clientName, Type type);
-    virtual void process(club::ComputerClub& club) const override {};
+    virtual void process(club::ComputerClub& club) const override;
   private:
-    std::string clientName_;
     Type type_;
   };
 
@@ -103,7 +97,6 @@ namespace events
   public:
     ErrorEvent(Time time, ErrorType error);
     virtual void print(std::ostream& out) const override;
-    virtual void process(club::ComputerClub& club) const override {};
   private:
     ErrorType error_;
   };

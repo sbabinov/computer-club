@@ -125,7 +125,18 @@ events::ClientCameEvent::ClientCameEvent(Time time, const std::string& clientNam
 void events::ClientCameEvent::process(club::ComputerClub& club) const
 {
   events::Event::process(club);
-
+  if (!club.isOpen())
+  {
+    events::ErrorEvent(club.currentTime(), events::ErrorType::NOT_OPEN_YET).process(club);
+  }
+  else if (club.hasClient(clientName_))
+  {
+    events::ErrorEvent(club.currentTime(), events::ErrorType::YOU_SHALL_NOT_PASS).process(club);
+  }
+  else
+  {
+    club.addClient(clientName_);
+  }
 }
 
 events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type):
@@ -149,10 +160,39 @@ void events::ClientSatEvent::print(std::ostream& out) const
   out << ' ' << table_;
 }
 
+void events::ClientSatEvent::process(club::ComputerClub& club) const
+{
+  events::Event::process(club);
+  if (type_ == Type::INCOMING)
+  {
+    if (!club.hasClient(clientName_))
+    {
+      events::ErrorEvent(club.currentTime(), events::ErrorType::CLIENT_UNKNOWN).process(club);
+    }
+    if (club.isTableOccupied(table_))
+    {
+      events::ErrorEvent(club.currentTime(), events::ErrorType::PLACE_IS_BUSY).process(club);
+    }
+    else
+    {
+      club.assignTable(clientName_, table_);
+    }
+  }
+}
+
 events::ClientWaitingEvent::ClientWaitingEvent(Time time, const std::string& clientName):
   events::ClientEvent(time, clientName)
 {
   id_ = 3;
+}
+
+void events::ClientWaitingEvent::process(club::ComputerClub& club) const
+{
+  events::Event::process(club);
+  if (club.hasAvailableTable())
+  {
+    events::ErrorEvent(club.currentTime(), events::ErrorType::I_CAN_WAIT_NO_LONGER).process(club);
+  }
 }
 
 events::ClientLeftEvent::ClientLeftEvent(Time time, const std::string& clientName, Type type):
@@ -166,6 +206,30 @@ events::ClientLeftEvent::ClientLeftEvent(Time time, const std::string& clientNam
   else
   {
     id_ = 11;
+  }
+}
+
+void events::ClientLeftEvent::process(club::ComputerClub& club) const
+{
+  events::Event::process(club);
+  if (type_ == Type::INCOMING)
+  {
+    if (!club.hasClient(clientName_))
+    {
+      events::ErrorEvent(club.currentTime(), events::ErrorType::CLIENT_UNKNOWN).process(club);
+    }
+    else
+    {
+      size_t availableTable = club.removeClient(clientName_);
+      if (!club.isQueueEmpty())
+      {
+        ClientSatEvent(time_, club.getClientFromQueue(), availableTable, ClientSatEvent::Type::OUTCOMING).process(club);
+      }
+    }
+  }
+  else
+  {
+    club.removeClient(clientName_);
   }
 }
 
