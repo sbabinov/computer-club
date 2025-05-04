@@ -168,16 +168,15 @@ void events::ClientSatEvent::process(club::ComputerClub& club) const
     if (!club.hasClient(clientName_))
     {
       events::ErrorEvent(club.currentTime(), events::ErrorType::CLIENT_UNKNOWN).process(club);
+      return;
     }
     if (club.isTableOccupied(table_))
     {
       events::ErrorEvent(club.currentTime(), events::ErrorType::PLACE_IS_BUSY).process(club);
-    }
-    else
-    {
-      club.assignTable(clientName_, table_);
+      return;
     }
   }
+  club.assignTable(clientName_, table_);
 }
 
 events::ClientWaitingEvent::ClientWaitingEvent(Time time, const std::string& clientName):
@@ -192,6 +191,10 @@ void events::ClientWaitingEvent::process(club::ComputerClub& club) const
   if (club.hasAvailableTable())
   {
     events::ErrorEvent(club.currentTime(), events::ErrorType::I_CAN_WAIT_NO_LONGER).process(club);
+  }
+  else
+  {
+    club.addClientToQueue(clientName_);
   }
 }
 

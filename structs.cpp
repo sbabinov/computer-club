@@ -23,6 +23,48 @@ bool structs::Time::operator<=(const Time& other) const
   return !(*this > other);
 }
 
+structs::Time structs::Time::operator+(const Time& other) const
+{
+  unsigned short newHours = 0;
+  unsigned short newMinutes = 0;
+  if (minutes + other.minutes > 59)
+  {
+    newHours = hours + other.hours + 1;
+    newMinutes = minutes + other.minutes - 60;
+  }
+  else
+  {
+    newHours = hours + other.hours;
+    newMinutes = minutes + other.minutes;
+  }
+  if (newHours > 23)
+  {
+    newHours = 0;
+  }
+  return Time{newHours, newMinutes};
+}
+
+structs::Time structs::Time::operator-(const Time& other) const
+{
+  unsigned short newHours = 0;
+  unsigned short newMinutes = 0;
+  if (minutes - other.minutes < 0)
+  {
+    newHours = hours - other.hours - 1;
+    newMinutes = minutes - other.minutes + 60;
+  }
+  else
+  {
+    newHours = hours - other.hours;
+    newMinutes = minutes - other.minutes;
+  }
+  if (newHours < 0)
+  {
+    newHours = 23;
+  }
+  return Time{newHours, newMinutes};
+}
+
 std::istream& structs::operator>>(std::istream& in, Time& time)
 {
   std::istream::sentry sentry(in);

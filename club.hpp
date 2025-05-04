@@ -32,6 +32,7 @@ namespace club
     bool isQueueEmpty() const;
     Time currentTime() const;
     void addClient(const std::string& name);
+    void addClientToQueue(const std::string& name);
     void assignTable(const std::string& name, size_t table);
     size_t removeClient(const std::string& name);
     std::string getClientFromQueue();
@@ -41,7 +42,8 @@ namespace club
   private:
     std::set< std::string > clients_;
     std::queue< std::string > waitingClients_;
-    std::map< size_t, std::string > tables_;
+    std::map< size_t, std::pair< std::string, Time > > tables_;
+    std::map< size_t, std::pair< size_t, Time > > tableRevenue_;
     size_t nTables_;
     size_t price_;
     std::pair< Time, Time > workingTime_;
