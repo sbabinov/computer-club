@@ -22,7 +22,7 @@ TEST(TimeTest, MethodsTest)
 TEST(TimeTest, InputTest)
 {
   using structs::Time;
-  std::ifstream file("../inputs/time.txt");
+  std::ifstream file("../input/time.txt");
   ASSERT_TRUE(file.is_open()) << "Cannot open file";
   Time t{};
 

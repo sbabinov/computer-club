@@ -9,7 +9,7 @@
 TEST(EventTest, IOTest)
 {
   using namespace events;
-  std::ifstream file("../inputs/events.txt");
+  std::ifstream file("../input/events.txt");
   ASSERT_TRUE(file.is_open()) << "Cannot open file";
 
   auto event = std::make_unique< ClientEvent >();

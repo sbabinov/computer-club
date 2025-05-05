@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     iss = std::istringstream(line);
     auto event = std::make_unique< ClientEvent >();
     iss >> event;
-    if ((!iss) || (iss >> extra) || (event->getTime() <= (events.back()->getTime())))
+    if ((!iss) || (iss >> extra) || (event->getTime() < (events.back()->getTime())))
     {
       std::cerr << line << '\n';
       return 1;

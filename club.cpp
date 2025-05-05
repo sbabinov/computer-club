@@ -80,12 +80,7 @@ void club::ComputerClub::addClientToQueue(const std::string& name)
   waitingClients_.push(name);
 }
 
-void club::ComputerClub::assignTable(const std::string& name, size_t table)
-{
-  tables_[table] = {name, currentTime_};
-}
-
-size_t club::ComputerClub::removeClient(const std::string& name)
+size_t club::ComputerClub::updateRevenue(const std::string& name)
 {
   size_t table = 0;
   auto it = tables_.begin();
@@ -95,10 +90,22 @@ size_t club::ComputerClub::removeClient(const std::string& name)
   {
     table = (*it).first;
     Time occupationTime = currentTime_ - (it->second).second;
-    tableRevenue_[table].first += calculate_hours_dif(currentTime_, (it->second).second) * price_;
-    tableRevenue_[table].second = tableRevenue_[table].second + occupationTime;
+    tableRevenue_[it->first].first += calculate_hours_dif(currentTime_, (it->second).second) * price_;
+    tableRevenue_[it->first].second = tableRevenue_[it->first].second + occupationTime;
     tables_.erase(it);
   }
+  return table;
+}
+
+void club::ComputerClub::assignTable(const std::string& name, size_t table)
+{
+  updateRevenue(name);
+  tables_[table] = {name, currentTime_};
+}
+
+size_t club::ComputerClub::removeClient(const std::string& name)
+{
+  size_t table = updateRevenue(name);
   if (isOpen())
   {
     clients_.erase(name);

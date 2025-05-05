@@ -49,6 +49,8 @@ namespace club
     std::pair< Time, Time > workingTime_;
     Time currentTime_;
     std::ostream* logStream_;
+
+    size_t updateRevenue(const std::string& name);
   };
 }
 
