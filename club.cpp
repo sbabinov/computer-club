@@ -36,13 +36,13 @@ club::ComputerClub::~ComputerClub()
   (*logStream_) << workingTime_.second << '\n';
   for (auto it = tableRevenue_.begin(); it != tableRevenue_.end(); ++it)
   {
-    (*logStream_) << it->first << ' '  << (it->second).first << ' ' << (it->second).second << '\n';
+    (*logStream_) << it->first << ' ' << (it->second).first << ' ' << (it->second).second << '\n';
   }
 }
 
 bool club::ComputerClub::isOpen() const
 {
-  return (workingTime_.first <= currentTime_) && (currentTime_ <= workingTime_.second);
+  return (workingTime_.first <= currentTime_) && (currentTime_ < workingTime_.second);
 }
 
 bool club::ComputerClub::hasClient(const std::string& name) const

@@ -26,11 +26,12 @@ int main(int argc, char* argv[])
     return 1;
   }
   std::string line = "";
+  std::string extra = "";
   std::getline(file, line);
   std::istringstream iss(line);
   int nTables = 0;
   iss >> nTables;
-  if (!iss || (nTables <= 0))
+  if (!iss || (nTables <= 0) || (iss >> extra))
   {
     std::cerr << line << '\n';
     return 1;
@@ -38,10 +39,10 @@ int main(int argc, char* argv[])
 
   std::getline(file, line);
   iss = std::istringstream(line);
-  Time openTime{};
-  Time closeTime{};
-  iss >> openTime >> closeTime;
-  if (!iss)
+  Time openingTime{};
+  Time closingTime{};
+  iss >> openingTime >> closingTime;
+  if (!iss || (iss >> extra))
   {
     std::cerr << line << '\n';
     return 1;
@@ -51,13 +52,12 @@ int main(int argc, char* argv[])
   iss = std::istringstream(line);
   int price = 0;
   iss >> price;
-  if (!iss || (price <= 0))
+  if (!iss || (price <= 0) || (iss >> extra))
   {
     std::cerr << line << '\n';
     return 1;
   }
 
-  club::ComputerClub cl(nTables, {openTime, closeTime}, price, &std::cout);
   std::vector< std::unique_ptr< ClientEvent > > events;
   events.push_back(std::make_unique< ClientEvent >());
   while (std::getline(file, line))
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     iss = std::istringstream(line);
     auto event = std::make_unique< ClientEvent >();
     iss >> event;
-    if ((!iss) || (event->getTime() <= (events.back()->getTime())))
+    if ((!iss) || (iss >> extra) || (event->getTime() <= (events.back()->getTime())))
     {
       std::cerr << line << '\n';
       return 1;
@@ -73,6 +73,7 @@ int main(int argc, char* argv[])
     events.push_back(std::move(event));
   }
 
+  club::ComputerClub cl(nTables, {openingTime, closingTime}, price, &std::cout);
   for (auto it = events.begin() + 1; it != events.end(); ++it)
   {
     cl.processEvent(**it);
