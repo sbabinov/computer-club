@@ -15,6 +15,12 @@ namespace events
 {
   using structs::Time;
 
+  enum class EventType
+  {
+    INCOMING,
+    OUTCOMING
+  };
+
   enum class ErrorType
   {
     YOU_SHALL_NOT_PASS,
@@ -28,13 +34,14 @@ namespace events
   {
   public:
     Event() = default;
-    Event(Time time);
+    Event(Time time, EventType type);
     virtual ~Event() = default;
     Time getTime() const;
     virtual void process(club::ComputerClub& club) const;
     virtual void print(std::ostream& out) const;
   protected:
     unsigned short id_;
+    EventType type_;
     Time time_;
   };
   std::ostream& operator<<(std::ostream& out, const Event& event);
@@ -43,7 +50,7 @@ namespace events
   {
   public:
     ClientEvent() = default;
-    ClientEvent(Time time, const std::string& clientName);
+    ClientEvent(Time time, EventType type, const std::string& clientName);
     virtual void print(std::ostream& out) const override;
   protected:
     std::string clientName_;
@@ -60,17 +67,11 @@ namespace events
   class ClientSatEvent: public ClientEvent
   {
   public:
-    enum class Type
-    {
-      INCOMING,
-      OUTCOMING
-    };
-    ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type);
+    ClientSatEvent(Time time, const std::string& clientName, size_t table, EventType type);
     virtual void print(std::ostream& out) const override;
     virtual void process(club::ComputerClub& club) const override;
   private:
     size_t table_;
-    Type type_;
   };
 
   class ClientWaitingEvent: public ClientEvent
@@ -83,15 +84,8 @@ namespace events
   class ClientLeftEvent: public ClientEvent
   {
   public:
-    enum class Type
-    {
-      INCOMING,
-      OUTCOMING
-    };
-    ClientLeftEvent(Time time, const std::string& clientName, Type type);
+    ClientLeftEvent(Time time, const std::string& clientName, EventType type);
     virtual void process(club::ComputerClub& club) const override;
-  private:
-    Type type_;
   };
 
   class ErrorEvent: public Event

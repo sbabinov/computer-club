@@ -31,7 +31,7 @@ club::ComputerClub::~ComputerClub()
   currentTime_ = workingTime_.second;
   for (auto it = clients_.begin(); it != clients_.end(); ++it)
   {
-    events::ClientLeftEvent(currentTime_, *it, events::ClientLeftEvent::Type::OUTCOMING).process(*this);
+    events::ClientLeftEvent(currentTime_, *it, events::EventType::OUTCOMING).process(*this);
   }
   (*logStream_) << workingTime_.second << '\n';
   for (auto it = tableRevenue_.begin(); it != tableRevenue_.end(); ++it)

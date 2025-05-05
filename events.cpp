@@ -29,9 +29,10 @@ bool isNameCorrect(const std::string& name)
   return (std::find_if(name.cbegin(), name.cend(), pred) == name.cend());
 }
 
-events::Event::Event(Time time):
-  time_(time),
-  id_(0)
+events::Event::Event(Time time, EventType type):
+  id_(0),
+  type_(type),
+  time_(time)
 {}
 
 events::Time events::Event::getTime() const
@@ -87,7 +88,7 @@ std::istream& events::operator>>(std::istream& in, std::unique_ptr< ClientEvent 
     in >> table;
     if (in)
     {
-      event = std::make_unique< events::ClientSatEvent >(time, name, table, events::ClientSatEvent::Type::INCOMING);
+      event = std::make_unique< events::ClientSatEvent >(time, name, table, EventType::INCOMING);
     }
   }
   else if (id == 3)
@@ -96,7 +97,7 @@ std::istream& events::operator>>(std::istream& in, std::unique_ptr< ClientEvent 
   }
   else if (id == 4)
   {
-    event = std::make_unique< events::ClientLeftEvent >(time, name, events::ClientLeftEvent::Type::INCOMING);
+    event = std::make_unique< events::ClientLeftEvent >(time, name, EventType::INCOMING);
   }
   else
   {
@@ -105,8 +106,8 @@ std::istream& events::operator>>(std::istream& in, std::unique_ptr< ClientEvent 
   return in;
 }
 
-events::ClientEvent::ClientEvent(Time time, const std::string& clientName):
-  events::Event(time),
+events::ClientEvent::ClientEvent(Time time, EventType type, const std::string& clientName):
+  events::Event(time, type),
   clientName_(clientName)
 {}
 
@@ -117,7 +118,7 @@ void events::ClientEvent::print(std::ostream& out) const
 }
 
 events::ClientCameEvent::ClientCameEvent(Time time, const std::string& clientName):
-  events::ClientEvent(time, clientName)
+  events::ClientEvent(time, EventType::OUTCOMING, clientName)
 {
   id_ = 1;
 }
@@ -139,12 +140,11 @@ void events::ClientCameEvent::process(club::ComputerClub& club) const
   }
 }
 
-events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName, size_t table, Type type):
-  events::ClientEvent(time, clientName),
-  table_(table),
-  type_(type)
+events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName, size_t table, EventType type):
+  events::ClientEvent(time, type, clientName),
+  table_(table)
 {
-  if (type_ == Type::INCOMING)
+  if (type_ == EventType::INCOMING)
   {
     id_ = 2;
   }
@@ -163,7 +163,7 @@ void events::ClientSatEvent::print(std::ostream& out) const
 void events::ClientSatEvent::process(club::ComputerClub& club) const
 {
   events::Event::process(club);
-  if (type_ == Type::INCOMING)
+  if (type_ == EventType::INCOMING)
   {
     if (!club.hasClient(clientName_))
     {
@@ -180,7 +180,7 @@ void events::ClientSatEvent::process(club::ComputerClub& club) const
 }
 
 events::ClientWaitingEvent::ClientWaitingEvent(Time time, const std::string& clientName):
-  events::ClientEvent(time, clientName)
+  events::ClientEvent(time, EventType::INCOMING, clientName)
 {
   id_ = 3;
 }
@@ -198,11 +198,10 @@ void events::ClientWaitingEvent::process(club::ComputerClub& club) const
   }
 }
 
-events::ClientLeftEvent::ClientLeftEvent(Time time, const std::string& clientName, Type type):
-  events::ClientEvent(time, clientName),
-  type_(type)
+events::ClientLeftEvent::ClientLeftEvent(Time time, const std::string& clientName, EventType type):
+  events::ClientEvent(time, type, clientName)
 {
-  if (type_ == Type::INCOMING)
+  if (type_ == EventType::INCOMING)
   {
     id_ = 4;
   }
@@ -215,7 +214,7 @@ events::ClientLeftEvent::ClientLeftEvent(Time time, const std::string& clientNam
 void events::ClientLeftEvent::process(club::ComputerClub& club) const
 {
   events::Event::process(club);
-  if (type_ == Type::INCOMING)
+  if (type_ == EventType::INCOMING)
   {
     if (!club.hasClient(clientName_))
     {
@@ -226,7 +225,7 @@ void events::ClientLeftEvent::process(club::ComputerClub& club) const
       size_t availableTable = club.removeClient(clientName_);
       if (club.isOpen() && (!club.isQueueEmpty()))
       {
-        ClientSatEvent(time_, club.getClientFromQueue(), availableTable, ClientSatEvent::Type::OUTCOMING).process(club);
+        ClientSatEvent(time_, club.getClientFromQueue(), availableTable, EventType::OUTCOMING).process(club);
       }
     }
   }
@@ -237,7 +236,7 @@ void events::ClientLeftEvent::process(club::ComputerClub& club) const
 }
 
 events::ErrorEvent::ErrorEvent(Time time, ErrorType error):
-  events::Event(time),
+  events::Event(time, EventType::OUTCOMING),
   error_(error)
 {
   id_ = 13;
