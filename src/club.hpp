@@ -30,6 +30,7 @@ namespace club
     bool hasAvailableTable() const;
     bool isTableOccupied(size_t table) const;
     bool isQueueEmpty() const;
+    bool isQueueFull() const;
     Time currentTime() const;
     void addClient(const std::string& name);
     void addClientToQueue(const std::string& name);
