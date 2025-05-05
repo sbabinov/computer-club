@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
   Time openingTime{};
   Time closingTime{};
   iss >> openingTime >> closingTime;
-  if (!iss || (iss >> extra))
+  if (!iss || (iss >> extra) || (openingTime >= closingTime))
   {
     std::cerr << line << '\n';
     return 1;
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     if (typeid(*event) == typeid(ClientSatEvent))
     {
       size_t table = dynamic_cast< ClientSatEvent& >(*event).getTable();
-      if ((table < 0) || (table > nTables))
+      if (table > nTables)
       {
         std::cerr << line << '\n';
         return 1;

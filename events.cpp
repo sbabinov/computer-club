@@ -67,6 +67,7 @@ std::istream& events::operator>>(std::istream& in, std::unique_ptr< ClientEvent 
   Time time = {0, 0};
   std::string name = "";
   in >> time >> id >> name;
+  std::cout << time << ' ' << id << ' ' << name << '\n';
   if (!in)
   {
     return in;
@@ -84,9 +85,9 @@ std::istream& events::operator>>(std::istream& in, std::unique_ptr< ClientEvent 
   }
   else if (id == 2)
   {
-    size_t table;
+    long long table = 0;
     in >> table;
-    if (in)
+    if (in && (table > 0))
     {
       event = std::make_unique< events::ClientSatEvent >(time, name, table, EventType::INCOMING);
     }
