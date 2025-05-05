@@ -19,7 +19,7 @@ TEST(TimeTest, MethodsTest)
   EXPECT_EQ(t1 + t2, Time({4, 6}));
 }
 
-TEST(TimeTest, IOTest)
+TEST(TimeTest, InputTest)
 {
   using structs::Time;
   std::ifstream file("../inputs/time.txt");
@@ -41,4 +41,24 @@ TEST(TimeTest, IOTest)
   }
 
   file.close();
+}
+
+TEST(TimeTest, OutputTest)
+{
+  using structs::Time;
+
+  testing::internal::CaptureStdout();
+  std::cout << Time({23, 23});
+  std::string output = testing::internal::GetCapturedStdout();
+  EXPECT_EQ(output, "23:23");
+
+  testing::internal::CaptureStdout();
+  std::cout << Time({5, 5});
+  output = testing::internal::GetCapturedStdout();
+  EXPECT_EQ(output, "05:05");
+
+  testing::internal::CaptureStdout();
+  std::cout << Time({0, 0});
+  output = testing::internal::GetCapturedStdout();
+  EXPECT_EQ(output, "00:00");
 }
