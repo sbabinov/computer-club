@@ -11,7 +11,7 @@
 int main(int argc, char* argv[])
 {
   using structs::Time;
-  using events::ClientEvent;
+  using namespace events;
 
   if (argc != 2)
   {
@@ -69,6 +69,15 @@ int main(int argc, char* argv[])
     {
       std::cerr << line << '\n';
       return 1;
+    }
+    if (typeid(*event) == typeid(ClientSatEvent))
+    {
+      size_t table = dynamic_cast< ClientSatEvent& >(*event).getTable();
+      if ((table < 0) || (table > nTables))
+      {
+        std::cerr << line << '\n';
+        return 1;
+      }
     }
     events.push_back(std::move(event));
   }

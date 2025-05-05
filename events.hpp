@@ -68,6 +68,7 @@ namespace events
   {
   public:
     ClientSatEvent(Time time, const std::string& clientName, size_t table, EventType type);
+    size_t getTable() const;
     virtual void print(std::ostream& out) const override;
     virtual void process(club::ComputerClub& club) const override;
   private:

@@ -154,6 +154,11 @@ events::ClientSatEvent::ClientSatEvent(Time time, const std::string& clientName,
   }
 }
 
+size_t events::ClientSatEvent::getTable() const
+{
+  return table_;
+}
+
 void events::ClientSatEvent::print(std::ostream& out) const
 {
   events::ClientEvent::print(out);
