@@ -65,11 +65,6 @@ bool club::ComputerClub::isQueueEmpty() const
   return waitingClients_.empty();
 }
 
-bool club::ComputerClub::isQueueFull() const
-{
-  return waitingClients_.size() == nTables_;
-}
-
 structs::Time club::ComputerClub::currentTime() const
 {
   return currentTime_;

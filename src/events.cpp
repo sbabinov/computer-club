@@ -197,13 +197,9 @@ void events::ClientWaitingEvent::process(club::ComputerClub& club) const
   {
     events::ErrorEvent(club.currentTime(), events::ErrorType::I_CAN_WAIT_NO_LONGER).process(club);
   }
-  else if (!club.isQueueFull())
-  {
-    club.addClientToQueue(clientName_);
-  }
   else
   {
-    events::ClientLeftEvent(club.currentTime(), clientName_, events::EventType::OUTCOMING).process(club);
+    club.addClientToQueue(clientName_);
   }
 }
 
