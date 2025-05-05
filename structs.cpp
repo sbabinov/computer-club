@@ -23,6 +23,16 @@ bool structs::Time::operator<=(const Time& other) const
   return !(*this > other);
 }
 
+bool structs::Time::operator==(const Time& other) const
+{
+  return !(*this > other) && !(*this < other);
+}
+
+bool structs::Time::operator!=(const Time& other) const
+{
+  return !(*this == other);
+}
+
 structs::Time structs::Time::operator+(const Time& other) const
 {
   unsigned short newHours = 0;

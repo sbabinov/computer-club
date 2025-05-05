@@ -72,6 +72,7 @@ int main(int argc, char* argv[])
     }
     events.push_back(std::move(event));
   }
+  file.close();
 
   club::ComputerClub cl(nTables, {openingTime, closingTime}, price, &std::cout);
   for (auto it = events.begin() + 1; it != events.end(); ++it)
