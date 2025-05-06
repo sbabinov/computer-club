@@ -3,6 +3,9 @@
 > 1. The program implies that an event with ```ID 4``` cannot be triggered for a client who has not occupied a table, but is in a waiting queue.
 
 # Build
+> [!NOTE]
+> The project requires support of ```C++14``` standart.
+
 For a successful build create directory ```/build``` in project root. Then use following commands:
 ```cmd
 cd build
