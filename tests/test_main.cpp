@@ -4,18 +4,42 @@
 #include <cstdlib>
 #include <iterator>
 
-TEST(MainTest, MainTest)
+class MainParameterizedTest: public testing::TestWithParam< size_t >
+{
+protected:
+  void SetUp() override
+  {
+    testNum = GetParam();
+    inputFile = "../tests/input/inp" + std::to_string(testNum) + ".txt";
+    expectedOutputFile = "../tests/expected_output/out" + std::to_string(testNum) + ".txt";
+    actualOutputFile = "output.txt";
+  }
+
+  void TearDown() override
+  {
+    std::remove(actualOutputFile.c_str());
+  }
+
+  size_t testNum;
+  std::string inputFile;
+  std::string expectedOutputFile;
+  std::string actualOutputFile;
+};
+
+TEST_P(MainParameterizedTest, ProducesCorrectOutput)
 {
   using iter = std::istreambuf_iterator< char >;
+  std::string cmd = "./main " + inputFile + " > " + actualOutputFile;
+  std::system(cmd.c_str());
 
-  for (size_t i = 1; i <= 7; ++i)
-  {
-    std::string cmd = "./main ../tests/input/inp" + std::to_string(i) + ".txt > output.txt";
-    std::system(cmd.c_str());
+  std::ifstream expectedOut(expectedOutputFile);
+  std::ifstream actualOut(actualOutputFile);
 
-    std::ifstream out1("../tests/expected_output/out" + std::to_string(i) + ".txt");
-    std::ifstream out2("output.txt");
-    EXPECT_TRUE(std::equal(iter(out1), iter(), iter(out2)));
-  }
-  std::remove("output.txt");
+  EXPECT_TRUE(std::equal(iter(expectedOut), iter(), iter(actualOut)));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+  MainTests,
+  MainParameterizedTest,
+  testing::Range< size_t >(1, 8)
+);
